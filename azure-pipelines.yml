@@ -49,7 +49,7 @@ jobs:
         linux_jdk17:
           imageName: "ubuntu-latest"
           jdkVersion: "1.17"
-    maxParallel: 3
+      maxParallel: 3
     pool:
       vmImage: $(imageName)
 
