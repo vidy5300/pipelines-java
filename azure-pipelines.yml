@@ -18,12 +18,7 @@ steps:
     git remote set-url origin $(GITHUB_REPO)
     git fetch --unshallow || true  # Make sure shallow clone doesn't fail
   displayName: 'Set GitHub remote with PAT'
-- task: PublishCodeCoverageResults@1
-  inputs:
-    codeCoverageTool: "JaCoCo"
-    summaryFileLocation: 'target/site/jacoco/jacoco.xml'
-    reportDirectory: 'target/site/jacoco'
-    failIfCoverageEmpty: true
+
 - task: Maven@4
   inputs:
     mavenPomFile: 'pom.xml'
@@ -34,3 +29,10 @@ steps:
     publishJUnitResults: true
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     goals: 'package'
+
+- task: PublishCodeCoverageResults@1
+  inputs:
+    codeCoverageTool: "JaCoCo"
+    summaryFileLocation: 'target/site/jacoco/jacoco.xml'
+    reportDirectory: 'target/site/jacoco'
+    failIfCoverageEmpty: true
