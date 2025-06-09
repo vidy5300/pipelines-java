@@ -23,7 +23,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.2</version>
+        <version>0.8.10</version>
         <executions>
           <execution>
             <id>prepare-agent</id>
@@ -40,6 +40,18 @@
           </execution>
         </executions>
       </plugin>
+      
+
+	    <plugin>
+	      <groupId>org.apache.maven.plugins</groupId>
+	      <artifactId>maven-surefire-plugin</artifactId>
+	      <version>3.0.0-M9</version>
+	      <configuration>
+	        <forkCount>1</forkCount>
+	        <reuseForks>true</reuseForks>
+	        <argLine>${argLine} -Xmx1024m</argLine>
+	      </configuration>
+	    </plugin>
     </plugins>
   </build>
 
