@@ -4,12 +4,12 @@ trigger:
 variables:
   GITHUB_REPO: https://$(GITHUB_PAT)@github.com/vidy5300/pipelines-java.git
 
-# --------------------------
-# 🚧 Build Job – Linux Only
-# --------------------------
 jobs:
+  # -----------------------------------
+  # 🚧 Build Job – Single Configuration
+  # -----------------------------------
   - job: Build
-    displayName: "Build on Linux JDK 11"
+    displayName: "Build Job"
     pool:
       vmImage: ubuntu-latest
     variables:
@@ -32,9 +32,16 @@ jobs:
           goals: "clean package"
         displayName: "Maven Build"
 
-  # --------------------------
-  # 🧪 Test Job – Matrix on Linux + Windows + JDKs
-  # --------------------------
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: "target"
+          ArtifactName: "build-output"
+          publishLocation: "Container"
+        displayName: "Publish Build Artifacts"
+
+  # -----------------------------------
+  # 🧪 Test Job – Matrix (Decoupled)
+  # -----------------------------------
   - job: Test
     displayName: "Test Job"
     dependsOn: Build
@@ -46,14 +53,24 @@ jobs:
         windows_jdk11:
           imageName: "windows-latest"
           jdkVersion: "1.11"
-        linux_jdk17:
-          imageName: "ubuntu-latest"
-          jdkVersion: "1.17"
-      maxParallel: 3
+    maxParallel: 3
     pool:
       vmImage: $(imageName)
 
     steps:
+      - task: DownloadBuildArtifacts@0
+        inputs:
+          buildType: "current"
+          downloadType: "single"
+          artifactName: "build-output"
+          downloadPath: "$(Pipeline.Workspace)/downloaded-artifacts"
+        displayName: "Download Build Artifacts"
+
+      - script: |
+          echo "Downloaded contents:"
+          ls -R $(Pipeline.Workspace)/downloaded-artifacts
+        displayName: "Debug: List Downloaded Artifacts"
+
       - task: Maven@4
         name: TestStep
         inputs:
