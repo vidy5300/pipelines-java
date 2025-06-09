@@ -9,7 +9,15 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
+variables:
+  GITHUB_REPO: https://$(GITHUB_PAT)@github.com/vidy5300/pipelines-java.git
+
 steps:
+- script: |
+    echo "Updating Git remote URL to include token..."
+    git remote set-url origin $(GITHUB_REPO)
+    git fetch --unshallow || true  # Make sure shallow clone doesn't fail
+  displayName: 'Set GitHub remote with PAT'
 - task: Maven@3
   inputs:
     mavenPomFile: 'pom.xml'
