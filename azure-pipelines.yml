@@ -1,20 +1,5 @@
-# Maven
-# Build your Java project and run tests with Apache Maven.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/java
-
 trigger:
-- main
-
-strategy:
-  matrix:
-    linux:
-      imageName: "ubuntu-latest"
-    mac:
-      imageName: "macOS-latest"
-    windows:
-      imageName: "windows-latest"
-  maxParallel: 3
+  - main
 
 pool:
   vmImage: $(imageName)
@@ -24,31 +9,47 @@ variables:
 
 strategy:
   matrix:
-    jdk11:
+    linux_jdk10:
+      imageName: "ubuntu-latest"
+      jdkVersion: "1.10"
+    linux_jdk11:
+      imageName: "ubuntu-latest"
       jdkVersion: "1.11"
-  maxParallel: 2
+    windows_jdk10:
+      imageName: "windows-latest"
+      jdkVersion: "1.10"
+    windows_jdk11:
+      imageName: "windows-latest"
+      jdkVersion: "1.11"
+    mac_jdk10:
+      imageName: "macOS-latest"
+      jdkVersion: "1.10"
+    mac_jdk11:
+      imageName: "macOS-latest"
+      jdkVersion: "1.11"
+  maxParallel: 3
 
 steps:
-- script: |
-    echo "Updating Git remote URL to include token..."
-    git remote set-url origin $(GITHUB_REPO)
-    git fetch --unshallow || true  # Make sure shallow clone doesn't fail
-  displayName: 'Set GitHub remote with PAT'
+  - script: |
+      echo "Updating Git remote URL to include token..."
+      git remote set-url origin $(GITHUB_REPO)
+      git fetch --unshallow || true
+    displayName: "Set GitHub remote with PAT"
 
-- task: Maven@4
-  inputs:
-    mavenPomFile: 'pom.xml'
-    mavenOptions: '-Xmx3072m'
-    javaHomeOption: 'JDKVersion'
-    jdkVersionOption: $(jdkVersion)
-    jdkArchitectureOption: 'x64'
-    publishJUnitResults: true
-    testResultsFiles: '**/surefire-reports/TEST-*.xml'
-    goals: 'package'
+  - task: Maven@4
+    inputs:
+      mavenPomFile: "pom.xml"
+      mavenOptions: "-Xmx3072m"
+      javaHomeOption: "JDKVersion"
+      jdkVersionOption: $(jdkVersion)
+      jdkArchitectureOption: "x64"
+      publishJUnitResults: true
+      testResultsFiles: "**/surefire-reports/TEST-*.xml"
+      goals: "clean verify"
 
-- task: PublishCodeCoverageResults@1
-  inputs:
-    codeCoverageTool: "JaCoCo"
-    summaryFileLocation: 'target/site/jacoco/jacoco.xml'
-    reportDirectory: 'target/site/jacoco'
-    failIfCoverageEmpty: true
+  - task: PublishCodeCoverageResults@1
+    inputs:
+      codeCoverageTool: "JaCoCo"
+      summaryFileLocation: "target/site/jacoco/jacoco.xml"
+      reportDirectory: "target/site/jacoco"
+      failIfCoverageEmpty: true
