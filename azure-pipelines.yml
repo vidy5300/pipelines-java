@@ -4,35 +4,16 @@ trigger:
 variables:
   GITHUB_REPO: https://$(GITHUB_PAT)@github.com/vidy5300/pipelines-java.git
 
+# --------------------------
+# 🚧 Build Job – Linux Only
+# --------------------------
 jobs:
-  # --------------------------
-  # 🚧 Build Job
-  # --------------------------
   - job: Build
-    displayName: "Build Job"
-    strategy:
-      matrix:
-        linux_jdk10:
-          imageName: "ubuntu-latest"
-          jdkVersion: "1.10"
-        linux_jdk11:
-          imageName: "ubuntu-latest"
-          jdkVersion: "1.11"
-        windows_jdk10:
-          imageName: "windows-latest"
-          jdkVersion: "1.10"
-        windows_jdk11:
-          imageName: "windows-latest"
-          jdkVersion: "1.11"
-        mac_jdk10:
-          imageName: "macOS-latest"
-          jdkVersion: "1.10"
-        mac_jdk11:
-          imageName: "macOS-latest"
-          jdkVersion: "1.11"
+    displayName: "Build on Linux JDK 11"
     pool:
-      vmImage: $(imageName)
-
+      vmImage: ubuntu-latest
+    variables:
+      jdkVersion: "1.11"
     steps:
       - script: |
           echo "Updating Git remote URL to include token..."
@@ -52,31 +33,23 @@ jobs:
         displayName: "Maven Build"
 
   # --------------------------
-  # 🧪 Test Job
+  # 🧪 Test Job – Matrix on Linux + Windows + JDKs
   # --------------------------
   - job: Test
     displayName: "Test Job"
     dependsOn: Build
     strategy:
       matrix:
-        linux_jdk10:
-          imageName: "ubuntu-latest"
-          jdkVersion: "1.10"
         linux_jdk11:
           imageName: "ubuntu-latest"
           jdkVersion: "1.11"
-        windows_jdk10:
-          imageName: "windows-latest"
-          jdkVersion: "1.10"
         windows_jdk11:
           imageName: "windows-latest"
           jdkVersion: "1.11"
-        mac_jdk10:
-          imageName: "macOS-latest"
-          jdkVersion: "1.10"
-        mac_jdk11:
-          imageName: "macOS-latest"
-          jdkVersion: "1.11"
+        linux_jdk17:
+          imageName: "ubuntu-latest"
+          jdkVersion: "1.17"
+    maxParallel: 3
     pool:
       vmImage: $(imageName)
 
