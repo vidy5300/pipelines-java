@@ -53,7 +53,7 @@ jobs:
         windows_jdk11:
           imageName: "windows-latest"
           jdkVersion: "1.11"
-    maxParallel: 3
+      maxParallel: 3
     pool:
       vmImage: $(imageName)
 
