@@ -119,5 +119,5 @@ jobs:
         inputs:
           azureSubscription: "TestPipelineAzureServiceConnection" # Replace with your actual service connection name
           appType: "webAppLinux" # Use 'webApp' for Windows
-          appName: "helloworld-test-bsfxbbf7eaekfndf" # Replace with your actual App Service name
+          appName: "helloworld-test" # Replace with your actual App Service name
           package: "$(Pipeline.Workspace)/downloaded-artifacts/build-output/helloworld.war"
