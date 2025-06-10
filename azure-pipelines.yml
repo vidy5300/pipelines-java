@@ -90,3 +90,34 @@ jobs:
           summaryFileLocation: "target/site/jacoco/jacoco.xml"
           reportDirectory: "target/site/jacoco"
           failIfCoverageEmpty: true
+
+  # -----------------------------------
+  # 🧪 Deploy Job
+  # -----------------------------------
+  - job: Deploy
+    displayName: "Deploy to Azure App Service"
+    dependsOn: Test # or Test, depending on your structure
+    pool:
+      vmImage: ubuntu-latest
+
+    steps:
+      - task: DownloadBuildArtifacts@0
+        inputs:
+          buildType: "current"
+          downloadType: "single"
+          artifactName: "build-output"
+          downloadPath: "$(Pipeline.Workspace)/downloaded-artifacts"
+        displayName: "Download WAR Artifact"
+
+      - script: |
+          echo "Verifying WAR file:"
+          ls -l $(Pipeline.Workspace)/downloaded-artifacts/build-output/helloworld.war
+        displayName: "Verify WAR Exists"
+
+      - task: AzureWebApp@1
+        displayName: "Deploy WAR to Azure App Service"
+        inputs:
+          azureSubscription: "TestPipelineAzureServiceConnection" # Replace with your actual service connection name
+          appType: "webAppLinux" # Use 'webApp' for Windows
+          appName: "helloworld" # Replace with your actual App Service name
+          package: "$(Pipeline.Workspace)/downloaded-artifacts/build-output/helloworld.war"
