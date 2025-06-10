@@ -34,7 +34,7 @@ jobs:
 
       - script: |
           mv target/helloworld.war target/ROOT.war
-          displayName: "Rename WAR to ROOT.war"
+        displayName: "Rename WAR to ROOT.war"
 
       - task: PublishBuildArtifacts@1
         inputs:
