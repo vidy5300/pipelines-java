@@ -32,6 +32,10 @@ jobs:
           goals: "clean package"
         displayName: "Maven Build"
 
+      - script: |
+          mv target/helloworld.war target/ROOT.war
+          displayName: "Rename WAR to ROOT.war"
+
       - task: PublishBuildArtifacts@1
         inputs:
           PathtoPublish: "target"
@@ -111,7 +115,7 @@ jobs:
 
       - script: |
           echo "Verifying WAR file:"
-          ls -l $(Pipeline.Workspace)/downloaded-artifacts/build-output/helloworld.war
+          ls -l $(Pipeline.Workspace)/downloaded-artifacts/build-output/ROOT.war
         displayName: "Verify WAR Exists"
 
       - task: AzureWebApp@1
@@ -120,4 +124,4 @@ jobs:
           azureSubscription: "TestPipelineAzureServiceConnection" # Replace with your actual service connection name
           appType: "webAppLinux" # Use 'webApp' for Windows
           appName: "helloworld-test" # Replace with your actual App Service name
-          package: "$(Pipeline.Workspace)/downloaded-artifacts/build-output/helloworld.war"
+          package: "$(Pipeline.Workspace)/downloaded-artifacts/build-output/ROOT.war"
